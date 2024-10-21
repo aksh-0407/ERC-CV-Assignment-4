@@ -14,9 +14,9 @@ player_width, player_height = 50, 50
 player_pos = [width // 2 - player_width // 2, height - player_height - 10]
 
 # Enemy settings
-enemy_size_range = (30, 70)
+enemy_size_range = (30, 120)
 enemy_list = []
-enemy_speed = 5
+enemy_speed = 10
 
 # Initialize score and lives
 score = 0
@@ -27,7 +27,7 @@ game_over = False
 def create_enemy():
     x = random.randint(0, width - enemy_size_range[1])  # Random x position
     size = random.randint(*enemy_size_range)  # Random enemy size
-    speed = random.randint(3, 10)  # Random speed for each enemy
+    speed = random.randint(10, 25)  # Random speed for each enemy
     return [x, 0, size, speed]
 
 # Move enemies down
@@ -66,7 +66,7 @@ cap.set(4, height)
 
 while True:
     ret, frame = cap.read()
-    frame = cv2.flip(frame, 1)  # Mirror the frame
+    frame = cv2.flip(frame, 1)  
     rgb_frame = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
 
     if not game_over:
@@ -82,8 +82,6 @@ while True:
 
                 # Move player based on hand movement
                 player_pos[0] = np.clip(hand_x - player_width // 2, 0, width - player_width)
-
-                # Draw hand landmarks for debugging
                 mp_drawing.draw_landmarks(frame, hand_landmarks, mp_hands.HAND_CONNECTIONS)
 
         # Add new enemies randomly
@@ -124,22 +122,17 @@ while True:
         # Show game over screen and final score
         cv2.putText(frame, "GAME OVER", (width // 2 - 200, height // 2 - 100), cv2.FONT_HERSHEY_SIMPLEX, 3, (0, 0, 255), 5)
         cv2.putText(frame, f"Final Score: {score}", (width // 2 - 150, height // 2 + 50), cv2.FONT_HERSHEY_SIMPLEX, 2, (255, 255, 255), 5)
-        cv2.putText(frame, "Press 'R' to Restart or 'Q' to Quit", (width // 2 - 300, height // 2 + 150), cv2.FONT_HERSHEY_SIMPLEX, 1.5, (255, 255, 255), 3)
+        cv2.putText(frame, "Press 'r' to Restart or 'q' to Quit", (width // 2 - 300, height // 2 + 150), cv2.FONT_HERSHEY_SIMPLEX, 1.5, (255, 255, 255), 3)
 
-    # Show the frame
+    # Display score on the frame
     cv2.imshow("Object Dodging Game", frame)
 
-    # Capture key events
+    # Quit, Restarting the Game
     key = cv2.waitKey(1) & 0xFF
-
-    # If 'q' is pressed, quit the game
     if key == ord('q'):
         break
-
-    # If 'r' is pressed, reset the game
     if game_over and key == ord('r'):
         reset_game()
 
-# Release the webcam and close windows
 cap.release()
 cv2.destroyAllWindows()
